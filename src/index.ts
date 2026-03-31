@@ -6,6 +6,9 @@ const app = express();
 app.use(express.json());
 app.use('/api/subjects', subjectsRouter);
 
+if(!process.env.FRONTEND_URL) {
+    throw new Error('No FronTEND_URL environment variable');
+}
 app.use(cors({
     origin: process.env.FRONTEND_URL,
     methods:  [ "GET", "POST", "PUT", "DELETE" ],
