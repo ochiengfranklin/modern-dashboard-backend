@@ -66,7 +66,7 @@ router.get('/', async (req, res) => {
         });
 
     } catch (e) {
-        console.log(`GET /subjects error: ${e}`);
+        console.error(`GET /subjects error: ${e}`);
         res.status(500).send('Internal Server Error');
     }
 });
