@@ -56,4 +56,4 @@ CREATE INDEX "classes_subject_id_idx" ON "classes" USING btree ("subject_id");--
 CREATE INDEX "classes_teacher_id_idx" ON "classes" USING btree ("teacher_id");--> statement-breakpoint
 CREATE INDEX "enrollments_student_id_idx" ON "enrollments" USING btree ("student_id");--> statement-breakpoint
 CREATE INDEX "enrollments_class_id_idx" ON "enrollments" USING btree ("class_id");--> statement-breakpoint
-CREATE INDEX "enrollments_student_class_unique" ON "enrollments" USING btree ("student_id","class_id");
+CREATE UNIQUE INDEX "enrollments_student_class_unique" ON "enrollments" USING btree ("student_id","class_id");
