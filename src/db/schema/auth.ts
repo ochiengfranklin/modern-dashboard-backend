@@ -29,7 +29,9 @@ export const user = pgTable("user", {
     imageCldPubId: text("image_cld_pub_id"),
 
     ...timestamps,
-});
+}, (table) => ({
+    emailUnique: uniqueIndex("user_email_unique").on(table.email),
+}));
 
 export const session = pgTable(
     "session",
@@ -91,6 +93,10 @@ export const verification = pgTable(
     },
     (table) => ({
         identifierIdx: index("verification_identifier_idx").on(table.identifier),
+        identifierValueUnique: uniqueIndex("verification_identifier_value_unique").on(
+            table.identifier,
+            table.value
+        ),
     })
 );
 

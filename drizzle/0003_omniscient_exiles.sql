@@ -11,6 +11,8 @@ CREATE TABLE "classes" (
 	"description" text,
 	"status" "class_status" DEFAULT 'active' NOT NULL,
 	"schedules" jsonb NOT NULL,
+	CONSTRAINT "classes_schedules_is_array"
+		CHECK (jsonb_typeof("schedules") = 'array'),
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "classes_invite_code_unique" UNIQUE("invite_code")
@@ -54,4 +56,4 @@ CREATE INDEX "classes_subject_id_idx" ON "classes" USING btree ("subject_id");--
 CREATE INDEX "classes_teacher_id_idx" ON "classes" USING btree ("teacher_id");--> statement-breakpoint
 CREATE INDEX "enrollments_student_id_idx" ON "enrollments" USING btree ("student_id");--> statement-breakpoint
 CREATE INDEX "enrollments_class_id_idx" ON "enrollments" USING btree ("class_id");--> statement-breakpoint
-CREATE INDEX "enrollments_student_class_unique" ON "enrollments" USING btree ("student_id","class_id");
+CREATE UNIQUE INDEX "enrollments_student_class_unique" ON "enrollments" USING btree ("student_id","class_id");
