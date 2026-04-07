@@ -29,7 +29,9 @@ export const user = pgTable("user", {
     imageCldPubId: text("image_cld_pub_id"),
 
     ...timestamps,
-});
+}, (table) => ({
+    emailUnique: uniqueIndex("user_email_unique").on(table.email),
+}));
 
 export const session = pgTable(
     "session",
