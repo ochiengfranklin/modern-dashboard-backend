@@ -4,6 +4,8 @@ import { and, desc, eq, ilike, or, sql, getTableColumns } from "drizzle-orm";
 import { db } from "../db";
 import { classes, departments, enrollments, subjects, user } from "../db/schema";
 
+type UserRoles = "admin" | "teacher" | "student";
+
 const router = express.Router();
 
 // Get all users with optional search, role filter, and pagination

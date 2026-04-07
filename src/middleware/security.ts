@@ -4,6 +4,10 @@ import type { NextFunction, Request, Response } from "express";
 
 import aj from "../config/arcjet.js";
 
+
+type RateLimitRole = "admin" | "teacher" | "student" | "guest";
+
+
 const securityMiddleware = async (
     req: Request,
     res: Response,

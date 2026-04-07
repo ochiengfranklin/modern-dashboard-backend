@@ -3,6 +3,9 @@ import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
 import { db } from "../db";
 import { classes, departments, enrollments, subjects, user } from "../db/schema";
+import crypto from "crypto";
+
+
 
 const router = express.Router();
 
@@ -79,6 +82,10 @@ router.get("/", async (req, res) => {
     }
 });
 
+function generateInviteCode(): string {
+    return crypto.randomBytes(6).toString("base64url").substring(0, 10);
+}
+
 router.post("/", async (req, res) => {
     try {
         const {
@@ -96,7 +103,7 @@ router.post("/", async (req, res) => {
             .insert(classes)
             .values({
                 subjectId,
-                inviteCode: Math.random().toString(36).substring(2, 9),
+                inviteCode: generateInviteCode(),
                 name,
                 teacherId,
                 bannerCldPubId,

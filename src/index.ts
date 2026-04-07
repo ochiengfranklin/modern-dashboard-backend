@@ -13,12 +13,23 @@ import departmentsRouter from "./routes/departments.js";
 import statsRouter from "./routes/stats.js";
 import enrollmentsRouter from "./routes/enrollments.js";
 
-// import securityMiddleware from "./middleware/security.js";
+ import securityMiddleware from "./middleware/security.js";
 // import { auth } from "./lib/auth.js";
 
 const app = express();
 const PORT = 8000;
 
+if (!process.env.FRONTEND_URL) {
+      console.warn("FRONTEND_URL not set - CORS will allow all origins");
+    }
+
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL || "*", // allow all if not set (dev only)
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
+    })
+);
 app.use(
     cors({
         origin: process.env.FRONTEND_URL, // React app URL
