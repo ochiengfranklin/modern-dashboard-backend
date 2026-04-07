@@ -11,6 +11,8 @@ CREATE TABLE "classes" (
 	"description" text,
 	"status" "class_status" DEFAULT 'active' NOT NULL,
 	"schedules" jsonb NOT NULL,
+	CONSTRAINT "classes_schedules_is_array"
+		CHECK (jsonb_typeof("schedules") = 'array'),
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "classes_invite_code_unique" UNIQUE("invite_code")
