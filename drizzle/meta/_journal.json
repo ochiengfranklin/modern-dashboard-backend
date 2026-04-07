@@ -15,6 +15,20 @@
       "when": 1773345857945,
       "tag": "0001_red_blockbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775550803237,
+      "tag": "0002_ambitious_crusher_hogan",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1775551346531,
+      "tag": "0003_omniscient_exiles",
+      "breakpoints": true
     }
   ]
 }
