@@ -1,6 +1,6 @@
- import('apminsight')
-     .then(({ default: AgentAPI }) => AgentAPI.config())
-     .catch(() => console.log('APM not available in this environment'));
+import('apminsight')
+    .then(({ default: AgentAPI }) => AgentAPI.config())
+    .catch(() => console.log('APM not available in this environment'));
 
 import cors from "cors";
 import express from "express";
@@ -13,23 +13,12 @@ import departmentsRouter from "./routes/departments.js";
 import statsRouter from "./routes/stats.js";
 import enrollmentsRouter from "./routes/enrollments.js";
 
- import securityMiddleware from "./middleware/security.js";
- import { auth } from "./lib/auth.js";
+// import securityMiddleware from "./middleware/security.js";
+import { auth } from "./lib/auth.js";
 
 const app = express();
 const PORT = 8000;
 
-if (!process.env.FRONTEND_URL) {
-      console.warn("FRONTEND_URL not set - CORS will allow all origins");
-    }
-
-app.use(
-    cors({
-        origin: process.env.FRONTEND_URL || "*", // allow all if not set (dev only)
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        credentials: true,
-    })
-);
 app.use(
     cors({
         origin: process.env.FRONTEND_URL, // React app URL
@@ -42,7 +31,7 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
 
- app.use(securityMiddleware);
+// app.use(securityMiddleware);
 
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/users", usersRouter);
