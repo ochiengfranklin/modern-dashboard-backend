@@ -57,6 +57,6 @@ app.get("/", (req, res) => {
 });
 
 // Explicitly binding to 0.0.0.0 is best practice for Railway deployments
-app.listen(PORT as number, "0.0.0.0", () => {
-    console.log(`Server running at port ${PORT}`);
+app.listen(Number(PORT), "0.0.0.0", () => {
+    console.log(`🚀 Server is live and listening on port ${PORT}`);
 });
