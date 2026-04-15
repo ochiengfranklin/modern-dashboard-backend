@@ -19,23 +19,22 @@ import { auth } from "./lib/auth.js";
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// --- 1. BULLETPROOF CORS CONFIG ---
-const frontendUrl = (process.env.FRONTEND_URL || "https://modern-dashboard-smoky.vercel.app").replace(/\/$/, "");
-
+// 1. Clean, standard CORS. No regex hacks needed.
 app.use(
     cors({
-        origin: [frontendUrl, "http://localhost:5173"],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        origin: process.env.FRONTEND_URL || "https://modern-dashboard-smoky.vercel.app",
         credentials: true,
     })
 );
 
 
-app.options(/.*/, cors());
-// ----------------------------------
-
-// Native RegExp to bypass the Express 5 crash
-app.all(/^\/api\/auth/, toNodeHandler(auth));
+// We put this BEFORE express.json() so Better Auth gets the raw request stream.
+app.use("/api/auth", (req, res) => {
+    // Express strips the mount path. We forcefully restore it here so
+    // Better Auth knows exactly what route is being called.
+    req.url = req.originalUrl;
+    return toNodeHandler(auth)(req, res);
+});
 
 app.use(express.json());
 
