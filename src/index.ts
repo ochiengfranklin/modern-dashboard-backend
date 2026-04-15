@@ -17,17 +17,20 @@ import enrollmentsRouter from "./routes/enrollments.js";
 import { auth } from "./lib/auth.js";
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 
+// --- 1. CRITICAL: Robust CORS for Production (Vercel <-> Railway) ---
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL, // React app URL
-        methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
-        credentials: true, // allow cookies
+        // Fallback to your Vercel URL just in case the env variable drops
+        origin: process.env.FRONTEND_URL || "https://modern-dashboard-smoky.vercel.app",
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        credentials: true, // Required for those cross-site cookies!
     })
 );
 
-app.all("/api/auth/*splat", toNodeHandler(auth));
+// --- 2. THE FIX: Native RegExp to bypass the Express 5 crash ---
+app.all(/^\/api\/auth/, toNodeHandler(auth));
 
 app.use(express.json());
 
