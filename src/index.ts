@@ -13,32 +13,37 @@ import departmentsRouter from "./routes/departments.js";
 import statsRouter from "./routes/stats.js";
 import enrollmentsRouter from "./routes/enrollments.js";
 
-// import securityMiddleware from "./middleware/security.js";
 import { auth } from "./lib/auth.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// 1. Clean, standard CORS. No regex hacks needed.
+// 1. Clean, standard CORS .
 app.use(
     cors({
-        origin: process.env.FRONTEND_URL || "https://modern-dashboard-smoky.vercel.app",
+        origin: [
+            "https://modern-dashboard-smoky.vercel.app",
+            "http://localhost:5173"
+        ],
         credentials: true,
     })
 );
 
 
-// We put this BEFORE express.json() so Better Auth gets the raw request stream.
-app.use("/api/auth", (req, res) => {
-    // Express strips the mount path. We forcefully restore it here so
-    // Better Auth knows exactly what route is being called.
-    req.url = req.originalUrl;
-    return toNodeHandler(auth)(req, res);
+// Safely intercept the route, restore the URL, and catch database/auth failures
+app.use("/api/auth", async (req, res) => {
+    try {
+        // Restore the full URL so Better Auth knows what route is being requested
+        req.url = req.originalUrl;
+        await toNodeHandler(auth)(req, res);
+    } catch (error) {
+        // If the DB connection fails, the server will log it here instead of dying!
+        console.error("🔥 CRITICAL AUTH ERROR 🔥:", error);
+        res.status(500).json({ error: "Internal Server Error during Authentication" });
+    }
 });
 
 app.use(express.json());
-
-// app.use(securityMiddleware);
 
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/users", usersRouter);
@@ -51,6 +56,7 @@ app.get("/", (req, res) => {
     res.send("Backend server is running!");
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+// Explicitly binding to 0.0.0.0 is best practice for Railway deployments
+app.listen(PORT as number, "0.0.0.0", () => {
+    console.log(`Server running at port ${PORT}`);
 });
