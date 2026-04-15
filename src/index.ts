@@ -19,15 +19,21 @@ import { auth } from "./lib/auth.js";
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// --- 1. CRITICAL: Robust CORS for Production (Vercel <-> Railway) ---
+// --- 1. BULLETPROOF CORS CONFIG ---
+// Guarantees no trailing slash, preventing strict string mismatch in the browser
+const frontendUrl = (process.env.FRONTEND_URL || "https://modern-dashboard-smoky.vercel.app").replace(/\/$/, "");
+
 app.use(
     cors({
-        // Fallback to your Vercel URL just in case the env variable drops
-        origin: process.env.FRONTEND_URL || "https://modern-dashboard-smoky.vercel.app",
+        origin: [frontendUrl, "http://localhost:5173"],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        credentials: true, // Required for those cross-site cookies!
+        credentials: true, // Required for cross-site cookies
     })
 );
+
+// Explicitly answer the browser's CORS "preflight" security checks
+app.options("*", cors());
+// ----------------------------------
 
 // --- 2. THE FIX: Native RegExp to bypass the Express 5 crash ---
 app.all(/^\/api\/auth/, toNodeHandler(auth));
