@@ -13,37 +13,25 @@ import departmentsRouter from "./routes/departments.js";
 import statsRouter from "./routes/stats.js";
 import enrollmentsRouter from "./routes/enrollments.js";
 
+// import securityMiddleware from "./middleware/security.js";
 import { auth } from "./lib/auth.js";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = 8000;
 
-// 1. Clean, standard CORS .
 app.use(
     cors({
-        origin: [
-            "https://modern-dashboard-smoky.vercel.app",
-            "http://localhost:5173"
-        ],
-        credentials: true,
+        origin: process.env.FRONTEND_URL, // React app URL
+        methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed HTTP methods
+        credentials: true, // allow cookies
     })
 );
 
-
-// Safely intercept the route, restore the URL, and catch database/auth failures
-app.use("/api/auth", async (req, res) => {
-    try {
-        // Restore the full URL so Better Auth knows what route is being requested
-        req.url = req.originalUrl;
-        await toNodeHandler(auth)(req, res);
-    } catch (error) {
-        // If the DB connection fails, the server will log it here instead of dying!
-        console.error("🔥 CRITICAL AUTH ERROR 🔥:", error);
-        res.status(500).json({ error: "Internal Server Error during Authentication" });
-    }
-});
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json());
+
+// app.use(securityMiddleware);
 
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/users", usersRouter);
@@ -56,7 +44,6 @@ app.get("/", (req, res) => {
     res.send("Backend server is running!");
 });
 
-// Explicitly binding to 0.0.0.0 is best practice for Railway deployments
-app.listen(Number(PORT), "0.0.0.0", () => {
-    console.log(`🚀 Server is live and listening on port ${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
 });
